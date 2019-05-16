@@ -1150,7 +1150,7 @@ module powerbi.extensibility.visual {
             let mouseDownTime: number;
             const elementStyle: CSSStyleDeclaration = window.getComputedStyle(element);
 
-            $(this.rendererCanvas).on("mousemove", (event: JQueryEventObject) => {
+            $(this.rendererCanvas).on("mousemove touchmove", (event: JQueryEventObject) => {
                 const elementViewHeight: number = element.offsetHeight - element.offsetTop
                     - parseFloat(elementStyle.paddingTop)
                     - parseFloat(elementStyle.paddingBottom);
@@ -1168,17 +1168,17 @@ module powerbi.extensibility.visual {
                 this.mousePosNormalized = new THREE.Vector2(fractionalPositionX * 2 - 1, -fractionalPositionY * 2 + 1);
 
                 this.needsRender = true;
-            }).on("mousedown", (event: JQueryEventObject) => {
+            }).on("mousedown touchdown", (event: JQueryEventObject) => {
                 cancelAnimationFrame(this.cameraAnimationFrameId);
                 mouseDownTime = Date.now();
-            }).on("mouseup", (event: JQueryEventObject) => {
+            }).on("mouseup touchup", (event: JQueryEventObject) => {
 
                 // Debounce slow clicks
                 if ((Date.now() - mouseDownTime) > this.GlobeSettings.clickInterval) {
                     return;
                 }
 
-                if (this.hoveredBar && event.shiftKey) {
+                if (this.hoveredBar) {// && event.shiftKey) {
                     this.selectedBar = this.hoveredBar;
                     this.animateCamera(this.selectedBar.position, () => {
                         if (!this.selectedBar) return;
@@ -1192,6 +1192,7 @@ module powerbi.extensibility.visual {
                             this.orbitControls.minDistance = this.GlobeSettings.earthRadius + 1;
                         });
                         this.selectedBar = null;
+                        console.log("selectedbar null");
                     }
                 }
             }).on("mousewheel DOMMouseScroll", (e: { originalEvent }) => {
