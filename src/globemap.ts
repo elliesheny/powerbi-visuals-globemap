@@ -1150,7 +1150,7 @@ module powerbi.extensibility.visual {
             let mouseDownTime: number;
             const elementStyle: CSSStyleDeclaration = window.getComputedStyle(element);
 
-            $(this.rendererCanvas).on("mousemove touchmove", (event: JQueryEventObject) => {
+            $(this.rendererCanvas).on("mousemove touchmove", (event: JQueryEventObject) => { 
                 const elementViewHeight: number = element.offsetHeight - element.offsetTop
                     - parseFloat(elementStyle.paddingTop)
                     - parseFloat(elementStyle.paddingBottom);
