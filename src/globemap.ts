@@ -236,6 +236,8 @@ module powerbi.extensibility.visual {
         private cameraAnimationFrameId: number;
         public visualHost: IVisualHost;
 
+        private selectionManager: ISelectionManager;
+
         private isFirstLoad: boolean = true;
 
         private tooltipService: ITooltipService;
@@ -491,6 +493,8 @@ module powerbi.extensibility.visual {
                     .withCategory(categoryColumn, dataPointsParams.catIndex)
                     .createSelectionId();
 
+            console.log(identity);
+
             const category: string = `${converterHelper.getSeriesName(dataPointsParams.source)}`;
             const objects: {} = categoryColumn && categoryColumn.objects;
             const color: string =
@@ -543,7 +547,7 @@ module powerbi.extensibility.visual {
         }
 
         constructor(options: VisualConstructorOptions) {
-            this.currentLanguage = options.host.locale;
+            this.currentLanguage = "zh-Hans";//options.host.locale;
             this.localStorageService = options.host.storageService;
             this.root = $("<div>").appendTo(options.element)
                 .attr("drag-resize-disabled", "true")
@@ -566,6 +570,9 @@ module powerbi.extensibility.visual {
             if (window["THREE"]) {
                 this.setup();
             }
+
+            this.selectionManager = options.host.createSelectionManager();
+            
         }
 
         private setup(): void {
@@ -584,14 +591,14 @@ module powerbi.extensibility.visual {
         private static cameraFov: number = 35;
         private static cameraNear: number = 0.1;
         private static cameraFar: number = 10000;
-        private static clearColor: number = 0xbac4d2;
+        private static clearColor: number = 0x2E2F89;//地球背景
         private static ambientLight: number = 0x000000;
         private static directionalLight: number = 0xffffff;
         private static directionalLightIntensity: number = 0.4;
         private static tileSize: number = 256;
         private static initialResolutionLevel: number = 2;
         private static maxResolutionLevel: number = 5;
-        private static metadataUrl: string = `https://dev.virtualearth.net/REST/V1/Imagery/Metadata/Road?output=json&uriScheme=https&key=${powerbi.extensibility.geocoder.Settings.BingKey}`;
+        private static metadataUrl: string = `https://dev.virtualearth.net/REST/V1/Imagery/Metadata/RoadOnDemand?output=json&uriScheme=https&key=${powerbi.extensibility.geocoder.Settings.BingKey}&c=zh-Hans`;
         private static reserveBindMapsMetadata: BingResourceMetadata = {
             imageUrl: "https://{subdomain}.tiles.virtualearth.net/tiles/r{quadkey}.jpeg?g=0&mkt={culture}",
             imageUrlSubdomains: [
@@ -606,11 +613,11 @@ module powerbi.extensibility.visual {
             imageHeight: 256,
             imageWidth: 256
         };
-        private currentLanguage: string = "en-GB";
+        private currentLanguage: string = "es-ES";
         private static TILE_STORAGE_KEY = "GLOBEMAP_TILES_STORAGE";
 
         private initScene(): void {
-            this.renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+            this.renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true, alpha:true });
             this.rendererContainer = $("<div>").appendTo(this.root).addClass("globeMapView");
 
             this.rendererContainer.append(this.renderer.domElement);
@@ -625,7 +632,7 @@ module powerbi.extensibility.visual {
             this.scene = new THREE.Scene();
 
             this.renderer.setSize(this.layout.viewportIn.width, this.layout.viewportIn.height);
-            this.renderer.setClearColor(GlobeMap.clearColor, 1);
+            this.renderer.setClearColor(GlobeMap.clearColor, 0);
             this.camera.position.z = this.GlobeSettings.cameraRadius;
             this.orbitControls.maxDistance = this.GlobeSettings.cameraRadius;
             this.orbitControls.minDistance = this.GlobeSettings.earthRadius + 1;
@@ -1177,9 +1184,17 @@ module powerbi.extensibility.visual {
                 if ((Date.now() - mouseDownTime) > this.GlobeSettings.clickInterval) {
                     return;
                 }
+                let selectionManager = this.selectionManager;
 
                 if (this.hoveredBar) {// && event.shiftKey) {
                     this.selectedBar = this.hoveredBar;
+
+                    // console.log(this.hoveredBar.id);
+                    // console.log(this.data.seriesDataPoints[this.hoveredBar.id].identity);
+                    // this.selectionManager.select(this.data.seriesDataPoints[this.hoveredBar.id].identity).then((ids: ISelectionId[]) => {
+                    //     //called when setting the selection has been completed successfully
+                    // });
+                    
                     this.animateCamera(this.selectedBar.position, () => {
                         if (!this.selectedBar) return;
                         this.orbitControls.target.copy(this.selectedBar.position.clone().normalize().multiplyScalar(this.GlobeSettings.earthRadius));
