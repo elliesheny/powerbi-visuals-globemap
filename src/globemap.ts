@@ -294,7 +294,7 @@ module powerbi.extensibility.visual {
                             seriesIndex: i,
                             metaData: null,
                             colorHelper: colorHelper,
-                            colors: colors,
+                            colorss: colors,
                             visualHost: visualHost,
                             catIndex: null
                         };
@@ -335,14 +335,14 @@ module powerbi.extensibility.visual {
                         } else if (categorical.Location) {
                             displayName = categorical.Location.values[index];
                         }
-
+                        //console.log("log:"+dataView.categorical.categories[2].values[index]);
                         let dataPointsParams = {
                             dataView: dataView,
                             source: { ...groupedColumns[0].Height.source, displayName: displayName },
                             seriesIndex: 0,
                             metaData: dataView.metadata,
                             colorHelper: colorHelper,
-                            colors: colors,
+                            colorss: dataView.categorical.categories[2].values[index],//categorical.BarColors.values[index],
                             visualHost: visualHost,
                             catIndex: index
                         };
@@ -416,6 +416,8 @@ module powerbi.extensibility.visual {
                     let toolTipDataLatName: string;
                     let location: ILocation;
                     let locationValue: string;
+                    //let cityNameValue:string;
+
                     if (typeof (locations[i]) === "string") {
                         place = `${locations[i]}`.toLowerCase();
                         placeKey = `${place} / ${locationType}`;
@@ -448,6 +450,7 @@ module powerbi.extensibility.visual {
                         seriesToolTipData: toolTipDataBySeries ? toolTipDataBySeries[i] : undefined,
                         heat: heat || 0,
                         toolTipData: {
+                            cityName: { displayName: "城市名称", value: dataView.categorical.categories[3].values[i]},
                             location: { displayName: !_.isEmpty(toolTipDataLocationName) && toolTipDataLocationName, value: locationValue },
                             longitude: { displayName: !_.isEmpty(toolTipDataLongName) && toolTipDataLongName, value: longitudeValue },
                             latitude: { displayName: !_.isEmpty(toolTipDataLatName) && toolTipDataLatName, value: latitudeValue },
@@ -470,7 +473,7 @@ module powerbi.extensibility.visual {
             return GlobeMapSettings.parse(dataView) as GlobeMapSettings;
         }
 
-        private static createDataPointForEnumeration(dataPointsParams: { dataView, seriesIndex, source, visualHost, catIndex, metaData, colors, colorHelper }): GlobeMapSeriesDataPoint {
+        private static createDataPointForEnumeration(dataPointsParams: { dataView, seriesIndex, source, visualHost, catIndex, metaData, colorss, colorHelper }): GlobeMapSeriesDataPoint {
             const columns: DataViewValueColumnGroup = dataPointsParams.dataView.categorical.values.grouped()[dataPointsParams.seriesIndex];
             const values: DataViewValueColumns = <DataViewValueColumns>columns.values;
             let sourceForFormat: DataViewMetadataColumn = dataPointsParams.source;
@@ -493,21 +496,21 @@ module powerbi.extensibility.visual {
                     .withCategory(categoryColumn, dataPointsParams.catIndex)
                     .createSelectionId();
 
-            console.log(identity);
+            //console.log(identity);
 
             const category: string = `${converterHelper.getSeriesName(dataPointsParams.source)}`;
             const objects: {} = categoryColumn && categoryColumn.objects;
-            const color: string =
-                objects && objects[dataPointsParams.catIndex] && objects[dataPointsParams.catIndex].dataPoint ?
-                    objects[dataPointsParams.catIndex].dataPoint.fill.solid.color : dataPointsParams.metaData && dataPointsParams.metaData.objects
-                        ? dataPointsParams.colorHelper.getColorForMeasure(dataPointsParams.metaData.objects, "")
-                        : dataPointsParams.colors.getColor(dataPointsParams.seriesIndex).value;
-
+            // const color: string =
+            //     objects && objects[dataPointsParams.catIndex] && objects[dataPointsParams.catIndex].dataPoint ?
+            //         objects[dataPointsParams.catIndex].dataPoint.fill.solid.color : dataPointsParams.metaData && dataPointsParams.metaData.objects
+            //             ? dataPointsParams.colorHelper.getColorForMeasure(dataPointsParams.metaData.objects, "")
+            //             : dataPointsParams.colors.getColor(dataPointsParams.seriesIndex).value;
+            //console.log(dataPointsParams.colorss);
             return {
                 label: label,
                 identity: identity,
                 category: category,
-                color: color,
+                color: dataPointsParams.colorss,//"#1A1B48",//color,
                 selected: null
             };
         }
@@ -1243,9 +1246,13 @@ module powerbi.extensibility.visual {
                     return;
                 }
 
-                const toolTipData: { location, longitude, latitude, series, height, heat } = (object).toolTipData;
+                const toolTipData: { cityName, location, longitude, latitude, series, height, heat } = (object).toolTipData;
                 const toolTipItems: VisualTooltipDataItem[] = [];
 
+                //if (toolTipData.cityName.displayName) {
+                    toolTipItems.push(toolTipData.cityName);
+                //}
+                console.log("tooltip");
                 if (toolTipData.location.displayName) {
                     toolTipItems.push(toolTipData.location);
                 }

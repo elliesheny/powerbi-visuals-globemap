@@ -87,6 +87,7 @@ module powerbi.extensibility.visual {
     }
 
     export interface IGlobeMapToolTipData {
+        cityName: PrimitiveValue;
         location: PrimitiveValue;
         longitude: PrimitiveValue;
         latitude: PrimitiveValue;

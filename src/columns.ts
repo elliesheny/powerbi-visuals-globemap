@@ -59,5 +59,6 @@ module powerbi.extensibility.visual {
         public Y: T = null;
         public Height: T = null;
         public Heat: T = null;
+        public BarColors: T = null;
     }
 }

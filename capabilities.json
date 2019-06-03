@@ -106,6 +106,28 @@
       "kind": "Measure",
       "displayName": "Heat Intensity",
       "displayNameKey": "Role_DisplayName_HeatIntensity"
+    },
+    {
+      "name": "assignedColor",
+      "kind": "Grouping",
+      "displayName": "Assigned Color",
+      "displayNameKey": "Role_DisplayName_assignedColor",
+      "requiredTypes": [
+        {
+          "text": true
+        }
+      ]
+    },
+    {
+      "name": "cityName",
+      "kind": "Grouping",
+      "displayName": "City Name",
+      "displayNameKey": "Role_DisplayName_cityName",
+      "requiredTypes": [
+        {
+          "text": true
+        }
+      ]
     }
   ],
   "dataViewMappings": [
@@ -127,6 +149,12 @@
           },
           "Heat": {
             "max": 1
+          },
+          "Color": {
+            "max": 1
+          },
+          "CityName":{
+            "max":1
           }
         },
         {
@@ -145,48 +173,66 @@
           },
           "Heat": {
             "max": 1
+          },
+          "Color": {
+            "max": 1
+          },
+          "CityName":{
+            "max":1
           }
         }
       ],
       "categorical": {
         "categories": {
           "select": [
-            { "bind": { "to": "Location" } }
-           ],
-           "dataReductionAlgorithm": {
-             "top": {}
-           }
+            {
+              "bind": {
+                "to": "Location"
+              }
+            }
+          ],
+          "dataReductionAlgorithm": {
+            "top": {}
+          }
         },
         "values": {
-
-            "select": [
-              {
-                "for": {
-                  "in": "Height"
-                }
-              },
-              {
-                "for": {
-                  "in": "Heat"
-                }
-              },
-              {
-                "for": {
-                  "in": "X"
-                }
-              },
-              {
-                "for": {
-                  "in": "Y"
-                }
+          "select": [
+            {
+              "for": {
+                "in": "Height"
               }
-            ],
-            "dataReductionAlgorithm": {
-              "top": {}
+            },
+            {
+              "for": {
+                "in": "Heat"
+              }
+            },
+            {
+              "for": {
+                "in": "X"
+              }
+            },
+            {
+              "for": {
+                "in": "Y"
+              }
+            },
+            {
+              "for": {
+                "in": "assignedColor"
+              }
+            },
+            {
+              "for": {
+                "in": "cityName"
+              }
             }
+          ],
+          "dataReductionAlgorithm": {
+            "top": {}
           }
         }
-      
+      }
     },
     {
       "conditions": [
@@ -205,35 +251,69 @@
           },
           "Heat": {
             "max": 1
+          },
+          "Color": {
+            "max": 1
+          },
+          "CityName": {
+            "max": 1
           }
         }
       ],
       "categorical": {
         "categories": {
-         "select": [
-           { "bind": { "to": "X" } },
-           { "bind": { "to": "Y" } }
+          "select": [
+            {
+              "bind": {
+                "to": "X"
+              }
+            },
+            {
+              "bind": {
+                "to": "Y"
+              }
+            },
+            {
+              "for": {
+                "in": "assignedColor"
+              }
+            },
+            {
+              "for": {
+                "in": "cityName"
+              }
+            }
           ],
           "dataReductionAlgorithm": {
             "top": {}
           }
         },
         "values": {
-            "select": [
-              {
-                "for": {
-                  "in": "Height"
-                }
-              },
-              {
-                "for": {
-                  "in": "Heat"
-                }
+          "select": [
+            {
+              "for": {
+                "in": "Height"
               }
-            ],
-            "dataReductionAlgorithm": {
-              "top": {}
+            },
+            {
+              "for": {
+                "in": "Heat"
+              }
+            },
+            {
+              "for": {
+                "in": "assignedColor"
+              }
+            },
+            {
+              "for": {
+                "in": "cityName"
+              }
             }
+          ],
+          "dataReductionAlgorithm": {
+            "top": {}
+          }
         }
       }
     }
